@@ -7,7 +7,8 @@ const initialState = {
   bookmark: null,  // current bookmark for restoring the selection
   node: null,      // current node of the selection (if collapsed) or common ancestor containing the selection)
   range: null,     // current selection range
-  editorRef: null  // reference to the editor
+  editorRef: null,  // reference to the editor,
+  uiFocus: false,
 }
 
 export default (state, action) => {
@@ -49,6 +50,16 @@ export default (state, action) => {
         bookmark: action.bookmark,
         node: action.node,
         range: action.range
+      }
+    case 'OUTER_CLICK_OUTSIDE':
+      return {
+        ...state,
+        uiFocus: true
+      }
+    case 'OUTER_CLICK_INSIDE':
+      return {
+        ...state,
+        uiFocus: false
       }
     default:
       return state

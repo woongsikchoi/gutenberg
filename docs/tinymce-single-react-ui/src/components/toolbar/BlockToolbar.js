@@ -27,6 +27,7 @@ export default class BlockToolbar extends React.Component {
 
 		// TODO: add option types
 		return (this.props.isOpen && pos) ? (
+
 			<div style={ pos }>
 				<div className={styles.toolbar}
 						onMouseEnter={() => { this.setState({ open: true }) }}

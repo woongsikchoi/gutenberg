@@ -1,4 +1,3 @@
-
 export const setup = (editorRef) => ({
   type: 'SETUP',
   editorRef
@@ -18,5 +17,3 @@ export const blur = (collapsed, bookmark, node) => ({
   type: 'BLUR',
   collapsed, bookmark, node
 })
-
-export default { setup, nodechange, focus, blur }

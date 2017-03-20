@@ -41,7 +41,7 @@ export default class InlineToolbar extends React.Component {
 					</Button>
 					<Button status={ status( isDel, node ) }
 						>
-						<Icons.EditorStrikethroughIcon />
+	 					<Icons.EditorStrikethroughIcon />
 					</Button>
 				</div>
 			</div>
