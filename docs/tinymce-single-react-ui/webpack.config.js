@@ -2,6 +2,9 @@
  * External dependencies
  */
 
+/* TODO: make dev config for react-hot-loader, production config without
+*/
+
 const webpack = require( 'webpack' );
 
 const config = module.exports = {
