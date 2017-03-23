@@ -43,7 +43,7 @@ class Turducken extends React.Component {
   }
 
   render() {
-    let store = this.props.myStore
+    let {store} = this.props
     let state = store.getState()
     let collapsed = state.collapsed
     let focused = state.focused

@@ -2,7 +2,7 @@ import React, { createElement, Component } from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import configureStore from './store/configureStore';
-import Root from './containers/Root';
+import Root from './containers/Turducken';
 import { Provider } from 'react-redux'
 
 const store = configureStore();
