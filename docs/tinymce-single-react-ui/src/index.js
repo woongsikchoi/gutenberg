@@ -6,28 +6,22 @@ import Root from './containers/Root';
 import { Provider } from 'react-redux'
 
 const store = configureStore();
-const id = 'tiny-react'
 
-let render = () => ReactDOM.render(
-	<AppContainer>
-		<Root store={store} />
-	</AppContainer>,
-	document.getElementById(id)
-);
-
-if (module.hot) {
-	module.hot.accept('./containers/Root', () => {
-		const NewRoot = require('./containers/Root').default;
-		render = () => ReatDOM.render(
+const render = Component => {
+  ReactDOM.render(
+    <AppContainer>
 			<Provider store={store}>
-				<AppContainer>
-					<NewRoot store={store} />
-				</AppContainer>
-			</Provider>,
-			document.getElementById(id)
-		);
-	});
+				<Component store={store} />
+			</Provider>
+    </AppContainer>,
+    document.getElementById('tiny-react')
+  );
 }
 
-render()
-store.subscribe(render)
+render(Root);
+
+if (module.hot) {
+  module.hot.accept('./containers/Root', () => render(Root) );
+}
+
+store.subscribe(() => render(Root))

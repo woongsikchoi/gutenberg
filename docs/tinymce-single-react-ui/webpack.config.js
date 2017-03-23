@@ -67,5 +67,5 @@ const config = module.exports = {
 if ( 'production' === process.env.NODE_ENV ) {
 	config.plugins.push( new webpack.optimize.UglifyJsPlugin() );
 } else {
-	config.devtool = 'source-map';
+	config.devtool = 'inline-source-map';
 }
