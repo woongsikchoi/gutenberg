@@ -6,7 +6,11 @@ const webpack = require( 'webpack' );
 
 const config = module.exports = {
 	entry: {
-		app: './src/index.js'
+		app: [
+      'babel-polyfill',
+      'react-hot-loader/patch',
+      './src/index'
+    ]
 	},
 	output: {
 		filename: 'build/[name].js',
