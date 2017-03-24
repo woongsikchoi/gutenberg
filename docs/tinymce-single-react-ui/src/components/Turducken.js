@@ -3,11 +3,11 @@ import { render } from 'react-dom'
 import enhanceWithClickOutside from 'react-click-outside'
 
 import * as Icons from '../external/dashicons/index'
-import BlockChangeToolbar from '../components/toolbar/BlockChangeToolbar'
-import BlockToolbar from '../components/toolbar/BlockToolbar'
-import InlineToolbar from '../components/toolbar/InlineToolbar'
-import Box from '../components/box/Box'
-import TinyMCEReact from '../components/tinymce/tinymce-react-ui'
+import BlockChangeToolbar from './toolbar/BlockChangeToolbar'
+import BlockToolbar from './toolbar/BlockToolbar'
+import InlineToolbar from './toolbar/InlineToolbar'
+import Box from './box/Box'
+import TinyMCEReact from './tinymce/tinymce-react-ui'
 import { blockList, blockType, blockAlign, getTopLevelBlock } from '../utils/tag'
 import * as actions from '../actions/content'
 import '../../shared/post-content'
@@ -30,11 +30,6 @@ let rangeRect = (range) => {
 let blockMenuPos = (rect) => (rect ? { position: 'absolute', top: rect.top - 38 + 'px', right: rect.left + 38 + 'px', zIndex: 23 } : {})
 let insertMenuPos = (rect) => (rect ? { position: 'absolute', top: rect.top - 38 + 'px', left: rect.left + 38 + 'px' } : {})
 
-let onNodeChange = (collapsed, bookmark, node, event) => store.dispatch(actions.nodechange(collapsed, bookmark, node, event))
-let onFocus = (collapsed, bookmark, node) => store.dispatch(actions.focus(collapsed, bookmark, node))
-let onBlur = (collapsed, bookmark, node) => store.dispatch(actions.blur(collapsed, bookmark, node))
-let onSetup = (editorRef) => store.dispatch(actions.setup(editorRef))
-
 class Turducken extends React.Component {
 
   constructor(props) {
@@ -48,7 +43,7 @@ class Turducken extends React.Component {
   }
 
   render() {
-    let {store} = this.props
+    let {store, onFocus, onBlur, onNodeChange, onSetup} = this.props
     let state = store.getState()
     let collapsed = state.collapsed
     let focused = state.focused
