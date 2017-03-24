@@ -21,7 +21,7 @@ const render = Component => {
 render(Root);
 
 if (module.hot) {
-  module.hot.accept('./containers/Root', () => render(Root) );
+  module.hot.accept('./containers/Turducken', () => render(Root) );
 }
 
 store.subscribe(() => render(Root))
