@@ -1,4 +1,4 @@
-import option from 'option'
+import Option from 'option'
 
 // TODO: use redux-actions
 
@@ -7,9 +7,9 @@ const initialState = {
   focused: false,  // does the editor have focus
   collapsed: null, // current selection is collapsed
   bookmark: null,  // current bookmark for restoring the selection
-  node: option.none,      // current node of the selection (if collapsed) or common ancestor containing the selection)
-  range: option.none,     // current selection range
-  editorRef: option.none,  // reference to the editor,
+  node: Option.none,      // current node of the selection (if collapsed) or common ancestor containing the selection)
+  range: Option.none,     // current selection range
+  editorRef: Option.none,  // reference to the editor,
   uiFocus: false,
 }
 
@@ -22,7 +22,7 @@ export default (state, action) => {
     case 'SETUP':
       return {
         ...state,
-        editorRef: option.fromNullable(action.editorRef)
+        editorRef: Option.fromNullable(action.editorRef)
       }
     case 'FOCUS':
       return {
@@ -30,8 +30,8 @@ export default (state, action) => {
         focused: true,
         collapsed: action.collapsed,
         bookmark: action.bookmark,
-        node: option.fromNullable(action.node),
-        range: option.fromNullable(action.range)
+        node: Option.fromNullable(action.node),
+        range: Option.fromNullable(action.range)
       }
     case 'BLUR':
       return {
@@ -39,16 +39,16 @@ export default (state, action) => {
         focused: false,
         collapsed: action.collapsed,
         bookmark: action.bookmark,
-        node: option.fromNullable(action.node),
-        range: option.fromNullable(action.range)
+        node: Option.fromNullable(action.node),
+        range: Option.fromNullable(action.range)
       }
     case 'NODECHANGE':
       return {
         ...state,
         collapsed: action.collapsed,
         bookmark: action.bookmark,
-        node: option.fromNullable(action.node),
-        range: option.fromNullable(action.range)
+        node: Option.fromNullable(action.node),
+        range: Option.fromNullable(action.range)
       }
     case 'OUTER_CLICK_OUTSIDE':
       return {
