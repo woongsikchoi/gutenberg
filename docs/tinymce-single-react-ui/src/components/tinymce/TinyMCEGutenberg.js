@@ -21,24 +21,15 @@ class TinyMCEGutenberg extends React.Component {
 
   render() {
     let {
-      blockRect, isInlineOpen, store, inlinePos, node,
+      blockRect, isInlineOpen, inlinePos, node,
       isBlockOpen, blockType, blockAlign, blockPos, content,
       onSetup, onFocus, onBlur, onNodeChange
     } = this.props
 
     return (
       <div>
-        <Box blockRect={blockRect} />
-        <InlineToolbar isOpen={isInlineOpen}
-          myStore={store}
-          inlinePos={inlinePos}
-          node={node}
-        />
-        <BlockToolbar isOpen={isBlockOpen}
-          blockType={blockType}
-          blockAlign={blockAlign}
-          pos={blockPos}
-        />
+        <Box rect={blockRect} />
+
         <TinyMCEReact content={content}
           onSetup={onSetup}
           onNodeChange={onNodeChange}
@@ -50,21 +41,32 @@ class TinyMCEGutenberg extends React.Component {
   }
 }
 
+/*
+<InlineToolbar isOpen={isInlineOpen}
+          inlinePos={inlinePos}
+          node={node}
+        />
+        <BlockToolbar isOpen={isBlockOpen}
+          blockType={blockType}
+          blockAlign={blockAlign}
+          pos={blockPos}
+        />
+*/
 TinyMCEGutenberg.propTypes = {
   blockRect: React.PropTypes.shape({
     top: React.PropTypes.number.isRequired, // initially these are empty
     left: React.PropTypes.number.isRequired,
     width: React.PropTypes.number.isRequired
-  }).isRequired,
+  }),
   isInlineOpen: React.PropTypes.bool.isRequired,
-  store: React.PropTypes.object.isRequired, // TODO: removeme
   inlinePos: React.PropTypes.shape({
     position: React.PropTypes.string,
     top: React.PropTypes.string,
     left: React.PropTypes.string,
     right: React.PropTypes.string,
     zIndex: React.PropTypes.number
-  }).isRequiredl,
+  }).isRequired,
+  node: React.PropTypes.object.isRequired, // Option(DOM element)
   isBlockOpen: React.PropTypes.bool.isRequired,
   blockType: React.PropTypes.string.isRequired,
   blockAlign: React.PropTypes.string.isRequired,
@@ -75,8 +77,8 @@ TinyMCEGutenberg.propTypes = {
     right: React.PropTypes.string,
     zIndex: React.PropTypes.number
   }).isRequired,
-  content: React.PropTypes.object.isRequired,
-  onSetup: React.PropTypes.func.isRequired,
+  content: React.PropTypes.string,
+  onSetup: React.PropTypes.func,
   onFocus: React.PropTypes.func,
   onBlur: React.PropTypes.func,
   onNodeChange: React.PropTypes.func
