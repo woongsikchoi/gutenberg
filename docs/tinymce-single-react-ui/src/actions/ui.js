@@ -1,7 +1,7 @@
-export const clickIn = {
+export const clickInside = {
   type: 'OUTER_CLICK_OUTSIDE',
 }
 
-export const clickOut = {
+export const clickOutside = {
   type: 'OUTER_CLICK_OUTSIDE',
 }

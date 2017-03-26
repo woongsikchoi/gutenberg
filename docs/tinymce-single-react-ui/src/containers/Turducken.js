@@ -1,86 +1,64 @@
 import React, { createElement, Component } from 'react'
 import { render } from 'react-dom'
-import enhanceWithClickOutside from 'react-click-outside'
+import { connect } from 'react-redux'
 
-import * as Icons from '../external/dashicons/index'
-import BlockChangeToolbar from '../components/toolbar/BlockChangeToolbar'
-import BlockToolbar from '../components/toolbar/BlockToolbar'
-import InlineToolbar from '../components/toolbar/InlineToolbar'
-import Box from '../components/box/Box'
-import TinyMCEReact from '../components/tinymce/tinymce-react-ui'
+import TinyMCEGutenberg from '../components/tinymce/TinyMCEGutenberg'
 import { blockList, blockType, blockAlign, getTopLevelBlock } from '../utils/tag'
-import * as actions from '../actions/content'
+import * as content from '../actions/content'
+import * as ui from '../actions/ui'
 import '../../shared/post-content'
-import '../assets/stylesheets/main.scss'
 
 let blockOpen = (focused, collapsed) => (focused)               // block menu shown when focused
 let inlineOpen = (focused, collapsed) => (focused && !collapsed) // inline if range selection
 
 // get tiny node from the container, and the top level block from the caret node
 let tinyNode = (containerNode) => ((containerNode && containerNode.children.length > 0) ? containerNode.children[0] : null)
-let topLevelBlock = (tinyNode, node) => ((tinyNode && node) ? getTopLevelBlock(tinyNode, node) : null)
+let topLevelBlock = (tinyNode, node) => ((tinyNode && node) ? getTopLevelBlock(tinyNode, node) : {})
 
 // Rect for the Range
 let rangeRect = (range) => {
-  if (range) {
-    return range.getBoundingClientRect();
-  }
+  return range === {} ? {} : range.getBoundingClientRect()
 }
 
 let blockMenuPos = (rect) => (rect ? { position: 'absolute', top: rect.top - 38 + 'px', right: rect.left + 38 + 'px', zIndex: 23 } : {})
 let insertMenuPos = (rect) => (rect ? { position: 'absolute', top: rect.top - 38 + 'px', left: rect.left + 38 + 'px' } : {})
 
-let onNodeChange = (collapsed, bookmark, node, event) => store.dispatch(actions.nodechange(collapsed, bookmark, node, event))
-let onFocus = (collapsed, bookmark, node) => store.dispatch(actions.focus(collapsed, bookmark, node))
-let onBlur = (collapsed, bookmark, node) => store.dispatch(actions.blur(collapsed, bookmark, node))
-let onSetup = (editorRef) => store.dispatch(actions.setup(editorRef))
+const mapStateToProps = ({collapsed, focused, range, node, editorRef, store}) => {
+  let tiny = tinyNode(editorRef)
+  let block = topLevelBlock(tiny, node)
+  let blockRect = rangeRect(block)
+  console.log('>> editor', editorRef, 'tiny:',tiny,'topBl:', block, 'br:', blockRect)
 
-class Turducken extends React.Component {
+  return {
+    store: store,
+    blockRect: blockRect,
+    isInlineOpen: inlineOpen(focused, collapsed),
+    inlinePos: insertMenuPos(rangeRect(block)),
+    node: node,
+    isBlockOpen: blockOpen(focused, collapsed),
+    blockType: blockType(block),
+    blockAlign: blockAlign(block),
+    blockPos: blockMenuPos(blockRect),
+    content: window.content
+ }
+}
 
-  constructor(props) {
-    super(props);
-  }
-
-
-  handleClickOutside() {
-    const hue = Math.floor(Math.random() * 360);
-    document.body.style.backgroundColor = `hsl(${hue}, 100%, 87.5%)`;
-  }
-
-  render() {
-    let {store} = this.props
-    let state = store.getState()
-    let collapsed = state.collapsed
-    let focused = state.focused
-    let range = state.range
-    let node = state.node // node of caret or ancestor of range
-    let editorRef = state.editorRef
-    let tiny = tinyNode(editorRef)
-    let topBlock = topLevelBlock(tiny, node)
-    let topRect = rangeRect(topBlock)
-
-    return (
-      <div>
-        <Box rect={topRect} />
-        <InlineToolbar isOpen={inlineOpen(focused, collapsed)} myStore={store}
-          pos={insertMenuPos(rangeRect(topBlock))}
-          node={node}
-        />
-        <BlockToolbar isOpen={blockOpen(focused, collapsed)}
-          blockType={blockType(topBlock)}
-          blockAlign={blockAlign(topBlock)}
-          pos={blockMenuPos(rangeRect(topBlock))}
-        />
-        <TinyMCEReact content={window.content}
-          onSetup={onSetup}
-          onNodeChange={onNodeChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-        />
-      </div>
-    )
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSetup: (editorRef) => dispatch(content.setup(editorRef)),
+    onNodeChange: (collapsed, bookmark, node, event) => dispatch(content.nodechange(collapsed, bookmark, node, event)),
+    onFocus: (collapsed, bookmark, node) => dispatch(content.focus(collapsed, bookmark, node)),
+    onBlur: (collapsed, bookmark, node) => dispatch(content.blur(collapsed, bookmark, node)),
+    onClickOutside: () => dispatch(ui.clickOutside)
   }
 }
+
+const Turducken = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TinyMCEGutenberg)
+
+export default Turducken
 
 // ////////
 // Anna's style: InlineToolbar appears at the start of the current Range
@@ -99,7 +77,4 @@ let positionNearCursor = (range) => {
     return { position: 'absolute', left: r.left - 10 + 'px', top: r.top - 48 + window.pageYOffset + 'px' }
   }
 }
-
-export default enhanceWithClickOutside(Turducken)
-
 // ////////
