@@ -14,10 +14,10 @@ let inlineOpen = (focused, collapsed) => (focused && !collapsed) // inline if ra
 
 // get tiny node from the container, and the top level block from the caret node
 let tinyNode = (containerOpt) => (containerOpt.flatMap((node) => (node.children.length > 0 ? Option.fromNullable(node.children[0]) : Option.none)))
-let topLevelBlock = (tinyOpt, nodeOpt) => (tinyOpt.map((tiny) => (nodeOpt.map((node) => utils.getTopLevelBlock(tiny, node)))))
+let topLevelBlock = (tinyOpt, nodeOpt) => (tinyOpt.flatMap((tiny) => (nodeOpt.flatMap((node) => Option.fromNullable(Utils.getTopLevelBlock(tiny, node))))))
 
 // Rect for the Range
-let rangeRect = (rangeOpt) => rangeOpt.map((range) => {console.dir(rangeOpt); return range.getBoundingClientRect()})
+let rangeRect = (rangeOpt) => rangeOpt.map((range) => range.getBoundingClientRect())
 
 let blockMenuPos = (rectOpt) => rectOpt.map((rect) => ({
   position: 'absolute', top: rect.top - 38 + 'px', right: rect.left + 38 + 'px', zIndex: 23
@@ -29,7 +29,6 @@ let insertMenuPos = (rectOpt) => rectOpt.map((rect) => ({
 const mapStateToProps = ({collapsed, focused, range, node, editorRef}) => {
   let tinyOpt = tinyNode(editorRef)
   let blockOpt = topLevelBlock(tinyOpt, node)
-  // debugger
   let blockRectOpt = rangeRect(blockOpt)
   console.log('>> editor', editorRef.valueOrElse('none'), 'tiny:',tinyOpt.valueOrElse('none'),'topBl:', blockOpt.valueOrElse('none'), 'br:', blockRectOpt.valueOrElse('none'))
 
@@ -65,19 +64,19 @@ export default Turducken
 
 // ////////
 // Anna's style: InlineToolbar appears at the start of the current Range
-let findStartOfRange = (range) => {
-  // make a collapsed range at the start point
-  if (range) {
-    let r = range.cloneRange();
-    r.setEnd(range.startContainer, range.startOffset);
-    return r.getBoundingClientRect();
-  }
-}
+// let findStartOfRange = (range) => {
+//   // make a collapsed range at the start point
+//   if (range) {
+//     let r = range.cloneRange();
+//     r.setEnd(range.startContainer, range.startOffset);
+//     return r.getBoundingClientRect();
+//   }
+// }
 
-let positionNearCursor = (range) => {
-  if (range) {
-    let r = findStartOfRange(range)
-    return { position: 'absolute', left: r.left - 10 + 'px', top: r.top - 48 + window.pageYOffset + 'px' }
-  }
-}
+// let positionNearCursor = (range) => {
+//   if (range) {
+//     let r = findStartOfRange(range)
+//     return { position: 'absolute', left: r.left - 10 + 'px', top: r.top - 48 + window.pageYOffset + 'px' }
+//   }
+// }
 // ////////
