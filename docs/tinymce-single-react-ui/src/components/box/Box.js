@@ -2,6 +2,7 @@ import React, { createElement, Component } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './box.scss';
 
+// position a box at rect or no box if null
 export default function Box({rect}) {
 	return rect ? (
     <div>
