@@ -12,7 +12,6 @@ const initialState = {
 }
 
 export default (state, action) => {
-  console.log('>> content: ', state, action)
   if ( ! state ) {
     state = initialState;
   }
