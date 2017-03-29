@@ -25,8 +25,8 @@ let rangeRect = (range) => {
 	}
 }
 
-let blockMenuPos = (rect) => ( rect ? {position: 'absolute', top: rect.top - 38 + 'px', right: rect.left + 38 + 'px', zIndex: 23 } : {} )
-let insertMenuPos = (rect) => ( rect ? {position: 'absolute', top: rect.top - 38 + 'px', left: rect.left + 38 + 'px'} : {} )
+let blockMenuPos = (rect) => ( rect ? {position: 'absolute', top: window.scrollY + rect.top - 38 + 'px', right: rect.left + 'px', zIndex: 23 } : {} )
+let insertMenuPos = (rect) => ( rect ? {position: 'absolute', top: window.scrollY + rect.top - 38 + 'px', left: rect.left + 'px'} : {} )
 
 let findStartOfRange = (range) => {
 	// make a collapsed range at the start point
