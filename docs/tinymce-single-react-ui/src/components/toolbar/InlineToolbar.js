@@ -20,14 +20,9 @@ const status = (pred, el) => {
 
 export default class InlineToolbar extends React.Component {
 	render() {
-		let store = this.props.myStore // props.context.store
+		let {isOpen, pos, node} = this.props || {}
 
-		let {top = 0, left = 0} = this.props.rect || {}
-		let node = this.props.node
-		let pos = this.props.pos
-
-		// TODO: add option types
-		return this.props.isOpen ? (
+		return isOpen ? (
 			<div className={styles.toolbarWrapper}
 				style={ pos } >
 				<div className={styles.toolbar}>
@@ -49,8 +44,9 @@ export default class InlineToolbar extends React.Component {
 		: null
 	}
 }
-						/*
-							onClick={ store.dispatch( { type: 'EFFECT_BOLD' } ) }
-              onClick={ store.dispatch( { type: 'EFFECT_ITALIC' } ) }
-						  onClick={ store.dispatch( { type: 'EFFECT_DEL' } ) }
-						*/
+
+/* TODO:
+	onClick={ store.dispatch( { type: 'EFFECT_BOLD' } ) }
+	onClick={ store.dispatch( { type: 'EFFECT_ITALIC' } ) }
+	onClick={ store.dispatch( { type: 'EFFECT_DEL' } ) }
+*/
