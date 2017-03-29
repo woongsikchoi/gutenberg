@@ -1,12 +1,22 @@
-.gutenberg {
+@import '../../inserter/style';
+
+body.toplevel_page_gutenberg {
 	background: #fff;
+}
+
+.gutenberg {
 	margin: -20px 0 0 -20px;
 	padding: 60px;
+
+	* {
+		box-sizing: border-box;
+	}
 }
 
 .gutenberg__editor {
 	max-width: 700px;
 	margin: 0 auto;
+	position: relative;
 	img {
 		max-width: 100%;
 	}

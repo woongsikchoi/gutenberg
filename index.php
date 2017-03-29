@@ -33,8 +33,16 @@ add_action( 'admin_menu', 'gutenberg_menu' );
  * @since 0.1.0
  */
 function gutenberg_register_scripts() {
-	wp_register_script( 'wp-element', plugins_url( 'modules/element/build/index.js', __FILE__ ) );
-	wp_register_script( 'wp-blocks', plugins_url( 'modules/blocks/build/index.js', __FILE__ ), array( 'wp-element' ) );
+	$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+	// Vendor
+	wp_register_script( 'react', 'https://unpkg.com/react@15/dist/react' . $suffix . '.js' );
+	wp_register_script( 'react-dom', 'https://unpkg.com/react-dom@15/dist/react-dom' . $suffix . '.js', array( 'react' ) );
+
+	// Editor
+	wp_register_script( 'tinymce-nightly', 'https://fiddle.azurewebsites.net/tinymce/nightly/tinymce.min.js' );
+	wp_register_script( 'wp-element', plugins_url( 'element/build/index.js', __FILE__ ), array( 'react', 'react-dom' ) );
+	wp_register_script( 'wp-blocks', plugins_url( 'blocks/build/index.js', __FILE__ ), array( 'wp-element', 'tinymce-nightly' ) );
 }
 add_action( 'init', 'gutenberg_register_scripts' );
 
@@ -49,9 +57,13 @@ add_action( 'init', 'gutenberg_register_scripts' );
  */
 function gutenberg_scripts_and_styles( $hook ) {
 	if ( 'toplevel_page_gutenberg' === $hook ) {
-		wp_register_script( 'gutenberg-content', plugins_url( 'docs/shared/post-content.js', __FILE__ ) );
-		wp_enqueue_script( 'wp-editor', plugins_url( 'modules/editor/build/index.js', __FILE__ ), array( 'wp-blocks', 'wp-element', 'gutenberg-content' ), false, true );
+		// Scripts
+		wp_register_script( 'gutenberg-content', plugins_url( 'post-content.js', __FILE__ ) );
+		wp_enqueue_script( 'wp-editor', plugins_url( 'editor/build/index.js', __FILE__ ), array( 'wp-blocks', 'wp-element', 'gutenberg-content' ), false, true );
 		wp_add_inline_script( 'wp-editor', 'wp.editor.createEditorInstance( \'editor\', { content: window.content } );' );
+
+		// Styles
+		wp_enqueue_style( 'wp-editor', plugins_url( 'editor/build/style.css', __FILE__ ) );
 	}
 }
 
@@ -68,7 +80,7 @@ add_action( 'admin_enqueue_scripts', 'gutenberg_scripts_and_styles' );
 function the_gutenberg_project() {
 	?>
 	<div class="gutenberg">
-		<section id="editor" class="gutenberg__editor" contenteditable="true"></section>
+		<section id="editor" class="gutenberg__editor"></section>
 	</div>
 	<?php
 }
@@ -76,11 +88,11 @@ function the_gutenberg_project() {
 /**
  * Registers a block.
  *
- * @param  string $namespace Block grouping unique to package or plugin.
- * @param  string $block     Block name.
- * @param  array  $args      Optional. Array of settings for the block. Default empty array.
- * @return bool              True on success, false on error.
+ * @param  string $name Block name including namespace.
+ * @param  array  $args Optional. Array of settings for the block. Default
+ *                      empty array.
+ * @return bool         True on success, false on error.
  */
-function register_block( $namespace, $block, $args = array() ) {
-
+function register_block( $name, $args = array() ) {
+	// Not implemented yet.
 }

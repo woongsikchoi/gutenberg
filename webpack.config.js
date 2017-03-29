@@ -2,66 +2,59 @@
  * External dependencies
  */
 
-const fs = require( 'fs' );
-const path = require( 'path' );
+const glob = require( 'glob' );
 const webpack = require( 'webpack' );
+const ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
 
-/**
- * Base path from which modules are to be discovered.
- *
- * @type {String}
- */
-const BASE_PATH = './modules';
-
-/**
- * Object of Webpack entry points consisting of modules discovered in the base
- * path subdirectory. Treating each as an independent bundle with a shared
- * configuration for library output provides a consistent authoring environment
- * and exposes each separately on the global scope (window.wp.blocks, etc.).
- *
- * @type {Object}
- */
-const entry = fs.readdirSync( BASE_PATH ).reduce( ( memo, filename ) => {
-	if ( '.' !== filename && '..' !== filename ) {
-		memo[ filename ] = BASE_PATH + '/' + filename + '/index.js';
-	}
-
-	return memo;
-}, {} );
-
-const config = module.exports = {
-	entry: entry,
+const config = {
+	entry: {
+		blocks: './blocks/index.js',
+		editor: './editor/index.js',
+		element: './element/index.js'
+	},
 	output: {
 		filename: '[name]/build/index.js',
-		path: path.resolve( BASE_PATH ),
+		path: __dirname,
 		library: [ 'wp', '[name]' ],
 		libraryTarget: 'this'
 	},
-	resolve: {
-		modules: [
-			'editor',
-			'external',
-			'node_modules'
-		]
+	externals: {
+		react: 'React',
+		'react-dom': 'ReactDOM'
 	},
 	module: {
 		rules: [
 			{
+				test: /\.pegjs/,
+				use: 'pegjs-loader'
+			},
+			{
 				test: /\.js$/,
+				exclude: /node_modules/,
 				use: 'babel-loader'
 			},
 			{
 				test: /\.s?css$/,
-				use: [
-					{ loader: 'style-loader' },
-					{ loader: 'css-loader' },
-					{ loader: 'postcss-loader' },
-					{ loader: 'sass-loader' }
-				]
+				use: ExtractTextPlugin.extract( {
+					use: [
+						{ loader: 'raw-loader' },
+						{ loader: 'postcss-loader' },
+						{
+							loader: 'sass-loader',
+							query: {
+								outputStyle: 'production' === process.env.NODE_ENV ?
+									'compressed' : 'nested'
+							}
+						}
+					]
+				} )
 			}
 		]
 	},
 	plugins: [
+		new ExtractTextPlugin( {
+			filename: './[name]/build/style.css'
+		} ),
 		new webpack.LoaderOptionsPlugin( {
 			minimize: process.env.NODE_ENV === 'production',
 			debug: process.env.NODE_ENV !== 'production',
@@ -74,8 +67,35 @@ const config = module.exports = {
 	]
 };
 
-if ( 'production' === process.env.NODE_ENV ) {
-	config.plugins.push( new webpack.optimize.UglifyJsPlugin() );
-} else {
-	config.devtool = 'source-map';
+switch ( process.env.NODE_ENV ) {
+	case 'production':
+		config.plugins.push( new webpack.optimize.UglifyJsPlugin() );
+		break;
+
+	case 'test':
+		config.target = 'node';
+		config.module.rules = [
+			...config.module.rules,
+			...[ 'element', 'blocks', 'editor' ].map( ( entry ) => ( {
+				test: require.resolve( './' + entry + '/index.js' ),
+				use: 'expose-loader?wp.' + entry
+			} ) )
+		];
+		config.entry = [
+			'./element/index.js',
+			'./blocks/index.js',
+			'./editor/index.js',
+			...glob.sync( `./{${ Object.keys( config.entry ).join() }}/test/*.js` )
+		];
+		config.externals = [ require( 'webpack-node-externals' )() ];
+		config.output = {
+			filename: 'build/test.js',
+			path: __dirname
+		};
+		break;
+
+	default:
+		config.devtool = 'source-map';
 }
+
+module.exports = config;
