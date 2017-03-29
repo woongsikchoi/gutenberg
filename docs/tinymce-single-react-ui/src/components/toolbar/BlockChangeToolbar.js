@@ -19,17 +19,21 @@ export default class BlockChangeToolbar extends React.Component {
   }
 
   toggleMenu = () => {
-    console.log('>toggle click', !this.state.open)
     this.setState({
       open: !this.state.open
     });
   }
 
+  closeMenu = () => {
+    this.setState({
+      open: false
+    });
+  }
+
   render() {
-    let {selected} = this.props
+    let {selected, editorFocus} = this.props
     let activeButton = getActiveButton(blockList, selected)
     let dropdownButtons = getDropdownButtons(blockList, selected)
-    console.log('>act,drop', selected, activeButton, dropdownButtons)
 
     return (
       <div className={cx(styles.horizontal, styles.toolbarStyle)} onClick={this.toggleMenu.bind(this)} >
@@ -42,7 +46,7 @@ export default class BlockChangeToolbar extends React.Component {
           )
           )}
 
-          {this.state.open && dropdownButtons.map((choice, index) => (
+          {this.state.open && !editorFocus && dropdownButtons.map((choice, index) => (
             <Button key={index} extraClass={[styles.verticalStyle]}
               status={'INACTIVE'}>
               {blockIconMap[choice]}

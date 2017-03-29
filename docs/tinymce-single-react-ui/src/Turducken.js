@@ -64,6 +64,7 @@ export default function Turducken(props) {
         node={ node }
         />
       <BlockToolbar  isOpen={ blockOpen(focused, collapsed) }
+        editorFocus={focused}
         blockType={ blockType(topBlock) }
         blockAlign={ blockAlign(topBlock) }
         pos={ blockMenuPos(rangeRect(topBlock)) }
