@@ -26,7 +26,7 @@ export default class BlockToolbar extends React.Component {
 		return (isOpen && pos) ? (
 			<div style={ pos }>
 				<div className={styles.toolbar}
-						onMouseEnter={() => { this.setState({ open: true }) }}
+						onMouseEnter={ () => { this.setState({ open: true }) } }
 						onMouseLeave={ () => { this.setState({ open: false }) } }
 						>
 					<BlockAlignToolbar  isOpen={blockAlignOpen} selected={blockAlign} />
