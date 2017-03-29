@@ -4,19 +4,19 @@ export const setup = (editorRef) => ({
   editorRef
 })
 
-export const nodechange = (collapsed, bookmark, node, event) => ({
+export const nodechange = (collapsed, bookmark, node, range, event) => ({
   type: 'NODECHANGE',
-  collapsed, bookmark, node
+  collapsed, bookmark, node, range
 })
 
-export const focus = (collapsed, bookmark, node) => ({
+export const focus = (collapsed, bookmark, node, range) => ({
   type: 'FOCUS',
-  collapsed, bookmark, node
+  collapsed, bookmark, node, range
 })
 
-export const blur = (collapsed, bookmark, node) => ({
+export const blur = (collapsed, bookmark, node, range) => ({
   type: 'BLUR',
-  collapsed, bookmark, node
+  collapsed, bookmark, node, range
 })
 
 export default { setup, nodechange, focus, blur }

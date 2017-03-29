@@ -22,33 +22,24 @@ export default (state, action) => {
     case 'SETUP':
       return {
         ...state,
-        editorRef: action.editorRef // TODO can do {...state, ...action } to merge two maps
+        ...action
       }
     case 'FOCUS':
       return {
         ...state,
-        focused: true,
-        collapsed: action.collapsed,
-        bookmark: action.bookmark,
-        node: action.node,
-        range: action.range // TODO can do {...state, ...action } to merge two maps
+        ...action,
+        focused: true
       }
     case 'BLUR':
       return {
         ...state,
-        focused: false,
-        collapsed: action.collapsed,
-        bookmark: action.bookmark,
-        node: action.node,
-        range: action.range
+        ...action,
+        focused: false
       }
     case 'NODECHANGE':
       return {
         ...state,
-        collapsed: action.collapsed,
-        bookmark: action.bookmark,
-        node: action.node,
-        range: action.range
+        ...action
       }
     default:
       return state

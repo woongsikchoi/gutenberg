@@ -28,42 +28,6 @@ let rangeRect = (range) => {
 let blockMenuPos = (rect) => ( rect ? {position: 'absolute', top: rect.top - 38 + 'px', right: rect.left + 38 + 'px', zIndex: 23 } : {} )
 let insertMenuPos = (rect) => ( rect ? {position: 'absolute', top: rect.top - 38 + 'px', left: rect.left + 38 + 'px'} : {} )
 
-export default function Turducken(props) {
-  let store = props.myStore
-  let state = store.getState()
-  let collapsed = state.collapsed
-  let focused = state.focused
-  let range = state.range
-  let node =  state.node // node of caret or ancestor of range
-  let editorRef = state.editorRef
-  let tiny = tinyNode(editorRef)
-  let topBlock = topLevelBlock(tiny, node)
-  let topRect = rangeRect(topBlock)
-
-  return (
-    <div>
-      <Box rect={topRect}/>
-      <InlineToolbar isOpen={ inlineOpen(focused, collapsed) }
-        pos={ insertMenuPos(rangeRect(topBlock)) }
-        node={ node }
-        />
-      <BlockToolbar  isOpen={ blockOpen(focused, collapsed) }
-        blockType={ blockType(topBlock) }
-        blockAlign={ blockAlign(topBlock) }
-        pos={ blockMenuPos(rangeRect(topBlock)) }
-        />
-      <TinyMCEReact content={window.content}
-        onSetup={ ( editorRef ) => store.dispatch( actions.setup(editorRef) ) }
-        onNodeChange={ ( collapsed, bookmark, node, event ) => store.dispatch( actions.nodechange( collapsed, bookmark, node, event ) ) }
-        onFocus={ ( collapsed, bookmark, node ) => store.dispatch( actions.focus( collapsed, bookmark, node ) ) }
-        onBlur={ ( collapsed, bookmark, node ) => store.dispatch( actions.blur( collapsed, bookmark, node ) ) }
-        />
-    </div>
-  )
-}
-
-// ////////
-// Anna's style: InlineToolbar appears at the start of the current Range
 let findStartOfRange = (range) => {
 	// make a collapsed range at the start point
 	if (range) {
@@ -75,8 +39,41 @@ let findStartOfRange = (range) => {
 
 let positionNearCursor = (range) => {
   if (range) {
-    let r = findStartOfRange(range)
-    return { position: 'absolute', left: r.left - 10 + 'px', top: r.top - 48 + window.pageYOffset + 'px' }
+    let rect = findStartOfRange(range)
+    return { position: 'absolute', left: rect.left - 10 + 'px', top: rect.top - 48 + window.pageYOffset + 'px' }
   }
 }
-// ////////
+export default function Turducken(props) {
+  let store = props.myStore
+  let state = store.getState()
+  let collapsed = state.collapsed
+  let focused = state.focused
+  let range = state.range
+  let node =  state.node // node of caret or ancestor of range
+  let editorRef = state.editorRef
+  let tiny = tinyNode(editorRef)
+  let topBlock = topLevelBlock(tiny, node)
+  let topRect = rangeRect(topBlock)
+  let inlinePos = positionNearCursor(range)
+
+  return (
+    <div>
+      <Box rect={topRect}/>
+      <InlineToolbar isOpen={ inlineOpen(focused, collapsed) }
+        pos={ inlinePos }
+        node={ node }
+        />
+      <BlockToolbar  isOpen={ blockOpen(focused, collapsed) }
+        blockType={ blockType(topBlock) }
+        blockAlign={ blockAlign(topBlock) }
+        pos={ blockMenuPos(rangeRect(topBlock)) }
+        />
+      <TinyMCEReact content={window.content}
+        onSetup={ ( editorRef ) => store.dispatch( actions.setup(editorRef) ) }
+        onNodeChange={ ( collapsed, bookmark, node, range, event ) => store.dispatch( actions.nodechange( collapsed, bookmark, node, range, event ) ) }
+        onFocus={ ( collapsed, bookmark, node, range ) => store.dispatch( actions.focus( collapsed, bookmark, node, range ) ) }
+        onBlur={ ( collapsed, bookmark, node, range ) => store.dispatch( actions.blur( collapsed, bookmark, node, range ) ) }
+        />
+    </div>
+  )
+}
