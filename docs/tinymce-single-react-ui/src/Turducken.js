@@ -43,7 +43,7 @@ export default function Turducken(props) {
   return (
     <div>
       <Box rect={topRect}/>
-      <InlineToolbar isOpen={ inlineOpen(focused, collapsed) } myStore={ store }
+      <InlineToolbar isOpen={ inlineOpen(focused, collapsed) }
         pos={ insertMenuPos(rangeRect(topBlock)) }
         node={ node }
         />
