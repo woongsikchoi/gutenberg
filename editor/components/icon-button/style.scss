@@ -15,7 +15,7 @@
 		}
 	}
 
-	&:after {
+	&[data-level]:after {
 		content: attr( data-level );
 		font-family: $default-font;
 		font-size: 10px;
