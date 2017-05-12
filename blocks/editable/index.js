@@ -92,6 +92,7 @@ export default class Editable extends wp.element.Component {
 		editor.on( 'nodechange', this.onNodeChange );
 		editor.on( 'keydown', this.onKeyDown );
 		editor.on( 'selectionChange', this.onSelectionChange );
+		editor.on( 'blur', this.props.onBlur );
 	}
 
 	onInit() {
