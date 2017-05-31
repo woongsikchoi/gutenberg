@@ -15,31 +15,48 @@ import { __ } from 'i18n';
 import { getGutenbergURL, getWPAdminURL } from './utils/url';
 import { focusBlock, replaceBlocks } from './actions';
 
-export default {
-	REQUEST_POST_UPDATE( action, store ) {
-		const { dispatch } = store;
-		const { postId, edits } = action;
-		const isNew = ! postId;
-		const toSend = postId ? { id: postId, ...edits } : edits;
+const postRequest = ( args ) => new wp.api.models.Post( args );
 
-		new wp.api.models.Post( toSend ).save().done( ( newPost ) => {
-			dispatch( {
-				type: 'REQUEST_POST_UPDATE_SUCCESS',
-				post: newPost,
-				isNew,
-			} );
-		} ).fail( ( err ) => {
-			dispatch( {
-				type: 'REQUEST_POST_UPDATE_FAILURE',
-				error: get( err, 'responseJSON', {
-					code: 'unknown_error',
-					message: __( 'An unknown error occurred.' ),
-				} ),
-				edits,
-				isNew,
-			} );
+// This is only exported for unit testing.
+export const requestPostUpdate = ( networkCallback ) => ( action, store ) => {
+	const { dispatch } = store;
+	const { postId, edits } = action;
+	const isNew = ! postId;
+	const toSend = postId ? { id: postId, ...edits } : edits;
+
+	networkCallback( toSend ).save().done( ( newPost ) => {
+		dispatch( {
+			type: 'REQUEST_POST_UPDATE_SUCCESS',
+			post: newPost,
+			isNew,
 		} );
-	},
+	} ).fail( ( err ) => {
+		dispatch( {
+			type: 'REQUEST_POST_UPDATE_FAILURE',
+			error: get( err, 'responseJSON', {
+				code: 'unknown_error',
+				message: __( 'An unknown error occurred.' ),
+			} ),
+			edits,
+			isNew,
+		} );
+	} );
+};
+
+// Only exported for testing.
+export const trashPostRequest = ( networkCallback ) => ( action, store ) => {
+	const { dispatch } = store;
+	const { postId } = action;
+	networkCallback( { id: postId } ).destroy().done( () => {
+		dispatch( {
+			...action,
+			type: 'TRASH_POST_SUCCESS',
+		} );
+	} );
+};
+
+export default {
+	REQUEST_POST_UPDATE: requestPostUpdate( postRequest ),
 	REQUEST_POST_UPDATE_SUCCESS( action ) {
 		const { post, isNew } = action;
 		if ( ! isNew ) {
@@ -50,16 +67,7 @@ export default {
 		} );
 		window.history.replaceState( {}, 'Post ' + post.id, newURL );
 	},
-	TRASH_POST( action, store ) {
-		const { dispatch } = store;
-		const { postId } = action;
-		new wp.api.models.Post( { id: postId } ).destroy().done( () => {
-			dispatch( {
-				...action,
-				type: 'TRASH_POST_SUCCESS',
-			} );
-		} );
-	},
+	TRASH_POST: trashPostRequest( postRequest ),
 	TRASH_POST_SUCCESS( action ) {
 		const { postId, postType } = action;
 		window.location.href = getWPAdminURL( 'edit.php', {
