@@ -128,7 +128,7 @@ function gutenberg_register_scripts() {
 	wp_register_script(
 		'wp-components',
 		gutenberg_url( 'components/build/index.js' ),
-		array( 'wp-element' ),
+		array( 'wp-element', 'wp-a11y' ),
 		filemtime( gutenberg_dir_path() . 'components/build/index.js' )
 	);
 	wp_register_script(

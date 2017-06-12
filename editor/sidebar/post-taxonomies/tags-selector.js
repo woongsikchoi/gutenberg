@@ -7,6 +7,7 @@ import { unescape, find } from 'lodash';
 /**
  * WordPress dependencies
  */
+import { __ } from 'i18n';
 import { Component } from 'element';
 import { FormTokenField } from 'components';
 import { getEditedPostAttribute } from '../../selectors';
@@ -109,6 +110,12 @@ class TagsSelector extends Component {
 					onChange={ this.onTagsChange }
 					maxSuggestions={ MAX_TERMS_SUGGESTIONS }
 					disabled={ loading }
+					placeholder={ __( 'Add New Tag' ) }
+					messages={ {
+						added: __( 'Tag added.' ),
+						removed: __( 'Tag removed.' ),
+						remove: __( 'Remove tag: %s.' ),
+					} }
 				/>
 			</div>
 		);
