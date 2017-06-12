@@ -1,7 +1,8 @@
 .editor-block-mover {
 	position: absolute;
 	top: 10px;
-	left: 0;
+	left: -$block-mover-padding-visible;
+	padding: 0 14px 20px 0; // handles hover area
 }
 
 .editor-block-mover__control {

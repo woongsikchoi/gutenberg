@@ -14,6 +14,12 @@ export function deselectBlock( uid ) {
 	};
 }
 
+export function clearSelectedBlock() {
+	return {
+		type: 'CLEAR_SELECTED_BLOCK',
+	};
+}
+
 export function replaceBlocks( uids, blocks ) {
 	return {
 		type: 'REPLACE_BLOCKS',
@@ -30,16 +36,15 @@ export function insertBlock( block, after ) {
 	};
 }
 
-export function setInsertionPoint( uid ) {
+export function showInsertionPoint() {
 	return {
-		type: 'SET_INSERTION_POINT',
-		uid,
+		type: 'SHOW_INSERTION_POINT',
 	};
 }
 
-export function clearInsertionPoint() {
+export function hideInsertionPoint() {
 	return {
-		type: 'CLEAR_INSERTION_POINT',
+		type: 'HIDE_INSERTION_POINT',
 	};
 }
 
@@ -50,11 +55,9 @@ export function editPost( edits ) {
 	};
 }
 
-export function savePost( postId, edits ) {
+export function savePost() {
 	return {
 		type: 'REQUEST_POST_UPDATE',
-		edits,
-		postId,
 	};
 }
 

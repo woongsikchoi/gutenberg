@@ -1,12 +1,13 @@
 /**
  * External dependencies
  */
-import { get } from 'lodash';
+import { BEGIN, COMMIT, REVERT } from 'redux-optimist';
+import { get, uniqueId } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { getBlockType, switchToBlockType } from 'blocks';
+import { serialize, getBlockType, switchToBlockType } from 'blocks';
 import { __ } from 'i18n';
 
 /**
@@ -14,19 +15,44 @@ import { __ } from 'i18n';
  */
 import { getGutenbergURL, getWPAdminURL } from './utils/url';
 import { focusBlock, replaceBlocks } from './actions';
+import { getCurrentPostId, getBlocks, getPostEdits } from './selectors';
 
 export default {
 	REQUEST_POST_UPDATE( action, store ) {
-		const { dispatch } = store;
-		const { postId, edits } = action;
+		const { dispatch, getState } = store;
+		const state = getState();
+		const postId = getCurrentPostId( state );
 		const isNew = ! postId;
-		const toSend = postId ? { id: postId, ...edits } : edits;
+		const edits = getPostEdits( state );
+		const toSend = {
+			...edits,
+			content: serialize( getBlocks( state ) ),
+		};
+		const transactionId = uniqueId();
 
+		if ( ! isNew ) {
+			toSend.id = postId;
+		}
+
+		dispatch( {
+			type: 'CLEAR_POST_EDITS',
+			optimist: { type: BEGIN, id: transactionId },
+		} );
+		dispatch( {
+			type: 'UPDATE_POST',
+			edits: toSend,
+			optimist: { id: transactionId },
+		} );
 		new wp.api.models.Post( toSend ).save().done( ( newPost ) => {
 			dispatch( {
 				type: 'REQUEST_POST_UPDATE_SUCCESS',
 				post: newPost,
 				isNew,
+				optimist: { type: COMMIT, id: transactionId },
+			} );
+			dispatch( {
+				type: 'RESET_POST',
+				post: newPost,
 			} );
 		} ).fail( ( err ) => {
 			dispatch( {
@@ -36,7 +62,7 @@ export default {
 					message: __( 'An unknown error occurred.' ),
 				} ),
 				edits,
-				isNew,
+				optimist: { type: REVERT, id: transactionId },
 			} );
 		} );
 	},
