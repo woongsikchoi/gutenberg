@@ -12,7 +12,7 @@ import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
  */
 import { Children } from 'element';
 import { Toolbar } from 'components';
-import { BACKSPACE, ESCAPE } from 'utils/keycodes';
+import { BACKSPACE, ESCAPE, UP, DOWN, LEFT, RIGHT } from 'utils/keycodes';
 
 /**
  * Internal dependencies
@@ -54,6 +54,9 @@ class VisualEditorBlock extends wp.element.Component {
 		this.mergeBlocks = this.mergeBlocks.bind( this );
 		this.onFocus = this.onFocus.bind( this );
 		this.onPointerDown = this.onPointerDown.bind( this );
+		this.onKeyDown = this.onKeyDown.bind( this );
+		this.onKeyUp = this.onKeyUp.bind( this );
+		this.handleArrowKey = this.handleArrowKey.bind( this );
 		this.previousOffset = null;
 	}
 
@@ -184,6 +187,63 @@ class VisualEditorBlock extends wp.element.Component {
 		this.props.onSelectionStart();
 	}
 
+	onKeyDown( event ) {
+		const { keyCode } = event;
+
+		this.handleArrowKey( event );
+
+		if ( keyCode === UP || keyCode === LEFT || keyCode === DOWN || keyCode === RIGHT ) {
+			const selection = window.getSelection();
+			this.lastRange = selection.rangeCount ? selection.getRangeAt( 0 ) : null;
+		}
+	}
+
+	onKeyUp( event ) {
+		this.removeOrDeselect( event );
+		this.handleArrowKey( event );
+	}
+
+	handleArrowKey( event ) {
+		const { keyCode, target } = event;
+		const moveUp = ( keyCode === UP || keyCode === LEFT );
+		const moveDown = ( keyCode === DOWN || keyCode === RIGHT );
+		const selectors = [
+			'*[contenteditable="true"]',
+			'*[tabindex]',
+			'textarea',
+			'input',
+		].join( ',' );
+
+		if ( moveUp || moveDown ) {
+			const selection = window.getSelection();
+			const range = selection.rangeCount ? selection.getRangeAt( 0 ) : null;
+
+			// If there's no movement, so we're either at the end of start, or
+			// no text input at all.
+			if ( range !== this.lastRange ) {
+				return;
+			}
+
+			const focusableNodes = Array.from( document.querySelectorAll( selectors ) );
+
+			if ( moveUp ) {
+				focusableNodes.reverse();
+			}
+
+			const targetNode = focusableNodes
+				.slice( focusableNodes.indexOf( target ) )
+				.reduce( ( result, node ) => {
+					return result || ( node.contains( target ) ? null : node );
+				}, null );
+
+			if ( targetNode ) {
+				targetNode.focus();
+			}
+		}
+
+		delete this.lastRange;
+	}
+
 	render() {
 		const { block, multiSelectedBlockUids } = this.props;
 		const blockType = wp.blocks.getBlockType( block.name );
@@ -225,7 +285,8 @@ class VisualEditorBlock extends wp.element.Component {
 		return (
 			<div
 				ref={ this.bindBlockNode }
-				onKeyDown={ this.removeOrDeselect }
+				onKeyDown={ this.onKeyDown }
+				onKeyUp={ this.onKeyUp }
 				onFocus={ this.onFocus }
 				onMouseDown={ this.onPointerDown }
 				onTouchStart={ this.onPointerDown }
