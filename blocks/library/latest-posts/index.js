@@ -3,6 +3,7 @@
  */
 import { Placeholder, FormToggle } from 'components';
 import { __ } from 'i18n';
+import moment from 'moment';
 
 /**
  * Internal dependencies
@@ -28,13 +29,13 @@ registerBlockType( 'core/latestposts', {
 		constructor() {
 			super( ...arguments );
 
-			const { poststoshow, displayPostDate } = this.props.attributes;
+			const { poststoshow } = this.props.attributes;
 
 			this.state = {
 				latestPosts: [],
 			};
 
-			this.latestPostsRequest = getLatestPosts( poststoshow, displayPostDate );
+			this.latestPostsRequest = getLatestPosts( poststoshow );
 
 			this.latestPostsRequest
 				.then( latestPosts => this.setState( { latestPosts } ) );
@@ -82,9 +83,18 @@ registerBlockType( 'core/latestposts', {
 					</InspectorControls>
 				),
 				<div className="blocks-latest-posts" key="latest-posts">
-					<ul>
+					<ul className="blocks-latest-posts__list">
 						{ latestPosts.map( ( post, i ) =>
-							<li key={ i }><a href={ post.link }>{ post.title.rendered }</a></li>
+							<li key={ i }>
+								<a href={ post.link }>{ post.title.rendered }</a>
+								{ displayPostDate && post.date_gmt &&
+									(
+										<span className="blocks-latest-posts__post-date">
+											{ moment( post.date_gmt ).local().format( 'MMM DD h:mm A' ) }
+										</span>
+									)
+								}
+							</li>
 						) }
 					</ul>
 				</div>,
