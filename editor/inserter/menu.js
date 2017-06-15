@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
  * WordPress dependencies
  */
 import { Dashicon, Popover, withFocusReturn, withInstanceId } from 'components';
-import { TAB, ESCAPE, LEFT, UP, RIGHT, DOWN } from 'utils/keycodes';
+import { TAB, ESCAPE, LEFT, UP, RIGHT, DOWN, isAlphaKeyCode } from 'utils/keycodes';
 
 /**
  * Internal dependencies
@@ -162,6 +162,12 @@ class InserterMenu extends wp.element.Component {
 	}
 
 	onKeyDown( keydown ) {
+		// Focus the search input if an alpha key was pressed
+		if ( isAlphaKeyCode( keydown.keyCode ) ) {
+			this.setSearchFocus();
+			return;
+		}
+
 		switch ( keydown.keyCode ) {
 			case TAB:
 				if ( keydown.shiftKey ) {
