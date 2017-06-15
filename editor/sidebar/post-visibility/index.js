@@ -10,6 +10,7 @@ import { find } from 'lodash';
  */
 import { __ } from 'i18n';
 import { Component } from 'element';
+import { Popover } from 'components';
 
 /**
  * Internal Dependencies
@@ -106,38 +107,39 @@ class PostVisibility extends Component {
 		return (
 			<div className="editor-post-visibility">
 				<span>{ __( 'Visibility' ) }</span>
-				<button className="editor-post-visibility__toggle button-link" onClick={ this.toggleDialog }>
-					{ getVisibilityLabel( visibility ) }
-				</button>
+				<span className="editor-post-visibility__button-wrapper">
+					<button className="editor-post-visibility__toggle button-link" onClick={ this.toggleDialog }>
+						{ getVisibilityLabel( visibility ) }
+					</button>
 
-				{ this.state.opened &&
-					<div className="editor-post-visibility__dialog">
-						<div className="editor-post-visibility__dialog-arrow" />
-						<div className="editor-post-visibility__dialog-legend">
-							{ __( 'Post Visibility' ) }
-						</div>
-						{ visibilityOptions.map( ( { value, label, info, onSelect, checked } ) => (
-							<label key={ value } className="editor-post-visibility__dialog-label">
+					{ this.state.opened &&
+						<Popover position="bottom left" className="editor-post-visibility__dialog">
+							<div className="editor-post-visibility__dialog-legend">
+								{ __( 'Post Visibility' ) }
+							</div>
+							{ visibilityOptions.map( ( { value, label, info, onSelect, checked } ) => (
+								<label key={ value } className="editor-post-visibility__dialog-label">
+									<input
+										type="radio"
+										value={ value }
+										onChange={ onSelect }
+										checked={ checked } />
+									{ label }
+									{ <div className="editor-post-visibility__dialog-info">{ info }</div> }
+								</label>
+							) ) }
+							{ this.state.hasPassword &&
 								<input
-									type="radio"
-									value={ value }
-									onChange={ onSelect }
-									checked={ checked } />
-								{ label }
-								{ <div className="editor-post-visibility__dialog-info">{ info }</div> }
-							</label>
-						) ) }
-						{ this.state.hasPassword &&
-							<input
-								className="editor-post-visibility__dialog-password-input"
-								type="text"
-								onChange={ updatePassword }
-								value={ password }
-								placeholder={ __( 'Create password' ) }
-							/>
-						}
-					</div>
-				}
+									className="editor-post-visibility__dialog-password-input"
+									type="text"
+									onChange={ updatePassword }
+									value={ password }
+									placeholder={ __( 'Create password' ) }
+								/>
+							}
+						</Popover>
+					}
+				</span>
 			</div>
 		);
 		/* eslint-enable jsx-a11y/label-has-for */
