@@ -29,6 +29,7 @@ registerBlockType( 'core/latestposts', {
 	edit: withInstanceId( class extends wp.element.Component {
 		constructor() {
 			super( ...arguments );
+			this.changePostsToShow = this.changePostsToShow.bind(this);
 
 			const { poststoshow } = this.props.attributes;
 
@@ -49,6 +50,33 @@ registerBlockType( 'core/latestposts', {
 			const { setAttributes } = this.props;
 
 			setAttributes( { displayPostDate: ! displayPostDate } );
+		}
+
+		componentWillReceiveProps(nextProps) {
+			const { poststoshow: postToShowCurrent } = this.props.attributes;
+			let { poststoshow: postToShowNext } = nextProps.attributes;
+			const { setAttributes } = this.props;
+
+			postToShowNext = parseInt( postToShowNext );
+
+			if( postToShowCurrent === postToShowNext ) {
+				return;
+			}
+
+			if( !isNaN(postToShowNext) && postToShowNext > 0 && postToShowNext <= 100 ) {
+				this.latestPostsRequest = getLatestPosts( postToShowNext );
+
+				this.latestPostsRequest
+					.then( latestPosts => this.setState( { latestPosts } ) );
+
+				setAttributes( { poststoshow: postToShowNext } );
+			}
+		}
+
+		changePostsToShow( postsToShow ) {
+			const { setAttributes } = this.props;
+
+			setAttributes( { poststoshow: postsToShow  } );
 		}
 
 		render() {
@@ -81,6 +109,13 @@ registerBlockType( 'core/latestposts', {
 								showHint={ false }
 							/>
 						</div>
+						<label>Number of posts to show:</label>
+						<input
+							type="text"
+							value={this.props.attributes.poststoshow}
+							ref="poststoshow"
+							onChange={ () => this.changePostsToShow( this.refs.poststoshow.value ) }
+						/>
 					</InspectorControls>
 				),
 				<div className="blocks-latest-posts" key="latest-posts">
