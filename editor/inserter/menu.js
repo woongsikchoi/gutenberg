@@ -233,6 +233,19 @@ class InserterMenu extends wp.element.Component {
 
 		return (
 			<Popover position={ position } className="editor-inserter__menu">
+				<label htmlFor={ `editor-inserter__search-${ instanceId }` } className="screen-reader-text">
+					{ wp.i18n.__( 'Search blocks' ) }
+				</label>
+				<input
+					id={ `editor-inserter__search-${ instanceId }` }
+					type="search"
+					placeholder={ wp.i18n.__( 'Search…' ) }
+					className="editor-inserter__search"
+					onChange={ this.filter }
+					onClick={ this.setSearchFocus }
+					ref={ this.bindReferenceNode( 'search' ) }
+					tabIndex="-1"
+				/>
 				<div role="menu" className="editor-inserter__content">
 					{ wp.blocks.getCategories()
 						.map( ( category ) => !! visibleBlocksByCategory[ category.slug ] && (
@@ -270,19 +283,6 @@ class InserterMenu extends wp.element.Component {
 						) )
 					}
 				</div>
-				<label htmlFor={ `editor-inserter__search-${ instanceId }` } className="screen-reader-text">
-					{ wp.i18n.__( 'Search blocks' ) }
-				</label>
-				<input
-					id={ `editor-inserter__search-${ instanceId }` }
-					type="search"
-					placeholder={ wp.i18n.__( 'Search…' ) }
-					className="editor-inserter__search"
-					onChange={ this.filter }
-					onClick={ this.setSearchFocus }
-					ref={ this.bindReferenceNode( 'search' ) }
-					tabIndex="-1"
-				/>
 			</Popover>
 		);
 	}
