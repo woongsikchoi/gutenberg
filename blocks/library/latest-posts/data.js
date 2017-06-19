@@ -3,17 +3,17 @@
  *
  * @param   {Number} postsToShow       Number of posts to display.
  *
- * @returns {wp.api.collections.Posts} Returns a Promise with the latest posts.
+ * @returns {Promise} Returns a Promise which resolves to the latest posts.
  */
 export function getLatestPosts( postsToShow = 5 ) {
-	const postsCollection = new wp.api.collections.Posts();
-
-	const posts = postsCollection.fetch( {
-		data: {
-			per_page: postsToShow,
-		},
+	return new Promise( ( resolve, reject ) => {
+		wp.api.init().then( () => {
+			const posts = new wp.api.collections.Posts();
+			posts.fetch( {
+				data: {
+					per_page: postsToShow,
+				},
+			} ).then( resolve, reject );
+		}, reject );
 	} );
-
-	return posts;
 }
-

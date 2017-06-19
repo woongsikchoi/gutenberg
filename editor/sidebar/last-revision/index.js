@@ -57,24 +57,26 @@ class LastRevision extends Component {
 		}
 		this.setState( { loading: true } );
 		const postIdToLoad = this.props.postId;
-		this.fetchRevisionsRequest = new wp.api.collections.PostRevisions( {}, { parent: postIdToLoad } ).fetch()
-			.done( ( revisions ) => {
-				if ( this.props.postId !== postIdToLoad ) {
-					return;
-				}
-				this.setState( {
-					loading: false,
-					revisions,
+		wp.api.init().then( () => {
+			this.fetchRevisionsRequest = new wp.api.collections.PostRevisions( {}, { parent: postIdToLoad } ).fetch()
+				.done( ( revisions ) => {
+					if ( this.props.postId !== postIdToLoad ) {
+						return;
+					}
+					this.setState( {
+						loading: false,
+						revisions,
+					} );
+				} )
+				.fail( () => {
+					if ( this.props.postId !== postIdToLoad ) {
+						return;
+					}
+					this.setState( {
+						loading: false,
+					} );
 				} );
-			} )
-			.fail( () => {
-				if ( this.props.postId !== postIdToLoad ) {
-					return;
-				}
-				this.setState( {
-					loading: false,
-				} );
-			} );
+		} );
 	}
 
 	render() {
